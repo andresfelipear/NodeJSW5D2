@@ -1,7 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {rest} from 'msw'
+import {setupServer} from 'msw/node'
 
 import SignUpPage from './SignUpPage'
+
+const server = setupServer()
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
 
 describe("Layout", () => {
 
@@ -73,5 +81,33 @@ describe("Interactions", () => {
         const button = screen.queryByRole("button", { name: "Sign Up"})
         expect(button).not.toBeDisabled()
         // expect(button).toBeEnabled()
+    })
+
+    it('sends username, email and password to backend', async() => {
+        server.use(
+            rest.post('http://localhost:8000/api/user/signup', (req,res,ctx) => {
+                return res(ctx.status(200))
+            })
+        )
+
+        render(<SignUpPage />)
+        const usernameInput = screen.getByLabelText("Username")
+        const emailInput = screen.getByLabelText("Email")
+        const passwordInput = screen.getByLabelText("Password")
+        const confirmPasswordInput = screen.getByLabelText("Confirm Password")
+
+        userEvent.type(usernameInput, 'hoge')
+        userEvent.type(emailInput, 'hoge@hoge.com')
+        userEvent.type(passwordInput, '123')
+        userEvent.type(confirmPasswordInput, '123')
+
+        const button = screen.queryByRole("button", { name: "Sign Up"})
+        
+        userEvent.click(button)
+
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        expect(screen.getByRole('alert')).toHaveTextContent('Signed up successfully')
+
     })
 })
