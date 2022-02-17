@@ -44,7 +44,7 @@ class SignUpPage extends Component {
     return (
       <>
         <form>
-          {this.state.submitted && <p role="alert">Signed up successfully</p>}
+          {this.state.submitted && <div role="dialog">Signed up successfully</div>}
           <h1>Sign Up</h1>
           <label htmlFor="username">Username</label>
           <input id="username" type="text" onChange={this.onChange} />

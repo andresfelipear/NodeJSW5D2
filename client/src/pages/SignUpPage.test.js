@@ -105,9 +105,12 @@ describe("Interactions", () => {
         
         userEvent.click(button)
 
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
 
-        expect(screen.getByRole('alert')).toHaveTextContent('Signed up successfully')
+        // expect(screen.getByRole('dialog')).toHaveTextContent('Signed up successfully')
+        // // expect(screen.queryByRole('p')).toHaveTextContent('Signed up successfully')
+        // expect(screen.getByLabelText("Username")== "hoge")
+        expect(screen.getByText('Signed up successfully'))
 
     })
 })
